@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/spf13/viper"
-	"github.com/Mamvriyskiy/lab1-template/person/logger"
+	logger "github.com/Mamvriyskiy/lab1-template/person/logger"
 )
 
 func initConfig() error {
