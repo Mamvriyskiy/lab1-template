@@ -1,4 +1,4 @@
-module github.com/Mamvriyskiy/lab1-template
+module github.com/Mamvriyskiy/lab1-template/person
 
 go 1.24.1
 
