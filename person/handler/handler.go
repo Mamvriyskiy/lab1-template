@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/Mamvriyskiy/database_course/main/pkg/service"
+	"github.com/Mamvriyskiy/lab1-template/person/services"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,13 +19,13 @@ func (h *Handler) InitRouters() *gin.Engine {
 	persons := router.Group("persons")
 
 	// Инофрмация о человека
-	persons.Get("/:personId", h.GetInfoPerson)
+	persons.GET("/:personId", h.GetInfoPerson)
 
 	// Информация по всем людям
-	persons.Get("", h.GetInfoPersons)
+	persons.GET("", h.GetInfoPersons)
 
 	// Создание новой записи о человеке
-	persons.Post("", h.CreateNewRecordPerson)
+	persons.POST("", h.CreateNewRecordPerson)
 
 	// Обновление существующей записи о человеке
 	persons.PATCH("/:personId", h.UpdateRecordPerson)

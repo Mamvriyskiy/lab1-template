@@ -1,6 +1,8 @@
 package services
 
-import "github.com/!mamvriyskiy/database_course/main/pkg/repository"
+import (
+	"github.com/Mamvriyskiy/lab1-template/person/repository"
+)
 
 type Persons interface {
 
