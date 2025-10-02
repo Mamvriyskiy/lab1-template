@@ -10,8 +10,8 @@ import (
 	handler "github.com/Mamvriyskiy/lab1-template/person/handler"
 	logger "github.com/Mamvriyskiy/lab1-template/person/logger"
 	repo "github.com/Mamvriyskiy/lab1-template/person/repository"
-	service "github.com/Mamvriyskiy/lab1-template/person/services"
 	server "github.com/Mamvriyskiy/lab1-template/person/server"
+	service "github.com/Mamvriyskiy/lab1-template/person/services"
 )
 
 func initConfig() error {
@@ -32,7 +32,7 @@ func main() {
 		logger.Fatal("Error load env file:", zap.Error(err))
 		return
 	}
-	logger.Fatal("Load env")
+	logger.Info("Load env")
 
 	db, err := repo.NewPostgresDB(&repo.Config{
 		Host:     viper.GetString("db.host"),
