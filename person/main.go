@@ -1,11 +1,17 @@
 package main
 
 import (
-	"go.uber.org/zap"
-	"github.com/spf13/viper"
+	"os"
+
 	"github.com/joho/godotenv"
+	"github.com/spf13/viper"
+	"go.uber.org/zap"
+
+	handler "github.com/Mamvriyskiy/lab1-template/person/handler"
 	logger "github.com/Mamvriyskiy/lab1-template/person/logger"
-	server "github.com/Mamvriyskiy/lab1-template/server"
+	repo "github.com/Mamvriyskiy/lab1-template/person/repository"
+	service "github.com/Mamvriyskiy/lab1-template/person/services"
+	server "github.com/Mamvriyskiy/lab1-template/person/server"
 )
 
 func initConfig() error {
@@ -23,13 +29,12 @@ func main() {
 	logger.Info("Файл конфигурации успешно прочитан")
 
 	if err := godotenv.Load(); err != nil {
-		logger.Log("Error", "Load", "Load env file:", err, "")
-		fmt.Println(err)
+		logger.Fatal("Error load env file:", zap.Error(err))
 		return
 	}
-	logger.Log("Info", "", "Load env", nil)
+	logger.Fatal("Load env")
 
-	db, err := repository.NewPostgresDB(&repository.Config{
+	db, err := repo.NewPostgresDB(&repo.Config{
 		Host:     viper.GetString("db.host"),
 		Port:     viper.GetString("db.port"),
 		Username: viper.GetString("db.username"),
@@ -39,14 +44,17 @@ func main() {
 	})
 
 	if err != nil {
-		fmt.Println(err)
-		logger.Log("Error", "initCongig", "Error config DB:", err, "")
+		// logger.Log("Error", "initCongig", "Error config DB:", err, "")
 		return
 	}
 
+	repos := repo.NewRepository(db)
+	services := service.NewServices(repos)
+	handlers := handler.NewHandler(services)
+
 	srv := new(server.Server)
 	if err := srv.Run("8000", handlers.InitRouters()); err != nil {
-		logger.Log("Error", "Run", "Error occurred while running http server:", err, "")
+		// logger.Log("Error", "Run", "Error occurred while running http server:", err, "")
 		return
 	}
 }

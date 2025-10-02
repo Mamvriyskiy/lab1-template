@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/jmoiron/sqlx"
 	"github.com/Mamvriyskiy/lab1-template/person/model"
 )
 
@@ -12,7 +13,7 @@ func NewPersonsPostgres(db *sqlx.DB) *PersonsPostgres {
 	return &PersonsPostgres{db: db}
 }
 
-func (r *Repository) GetInfoPerson(persinID int) (model.Person, error) {
+func (r *PersonsPostgres) GetInfoPerson(persinID int) (model.Person, error) {
 	var person model.Person
 	queryGetPersons := `select * from person where id = $1`
 	err := r.db.Select(&person, queryGetPersons, persinID)
@@ -23,10 +24,10 @@ func (r *Repository) GetInfoPerson(persinID int) (model.Person, error) {
 	return person, nil
 }
 
-func (r *Repository) GetInfoPersons() ([]model.Person, error) {
+func (r *PersonsPostgres) GetInfoPersons() ([]model.Person, error) {
 	var persons []model.Person
-	queryGetPersons := `select * from person where id = $1`
-	err := r.db.Select(&persons, queryGetPersons, persinID)
+	queryGetPersons := `select * from person`
+	err := r.db.Select(&persons, queryGetPersons)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +35,7 @@ func (r *Repository) GetInfoPersons() ([]model.Person, error) {
 	return persons, nil
 }
 
-func (r *Repository) CreateNewRecordPerson(person model.Person) (model.Person, error) {
+func (r *PersonsPostgres) CreateNewRecordPerson(person model.Person) (model.Person, error) {
 	var newPerson model.Person
 	queryCreatePerson := `insert into person (Name, Age, Address, Work) values($1, $2, $3, $4) returning *`
 	row := r.db.QueryRow(queryCreatePerson, person.Name, person.Age, person.Address, person.Work)
@@ -46,20 +47,40 @@ func (r *Repository) CreateNewRecordPerson(person model.Person) (model.Person, e
 	return newPerson, nil
 }
 
-func (r *Repository) UpdateRecordPerson(person model.Person) (model.Person, error) {
-	queryUpdatePerson := `update person set name = $1, age = $2, address = $3, work = $4 where id = $5`
-	updatePerson, err := r.db.Exec(queryUpdatePerson, person.Name, person.Work, person.Address)
-	if err != nil {
-		retirn model.Person{}, err
-	}
+func (r *PersonsPostgres) UpdateRecordPerson(person model.Person) (model.Person, error) {
+	queryUpdatePerson := `
+        UPDATE person 
+        SET name = $1, age = $2, address = $3, work = $4 
+        WHERE id = $5
+        RETURNING id, name, age, address, work`
+    
+    var updatedPerson model.Person
+    err := r.db.QueryRow(
+        queryUpdatePerson, 
+        person.Name, 
+        person.Age, 
+        person.Address, 
+        person.Work, 
+        person.PersonID,
+    ).Scan(
+        &updatedPerson.PersonID,
+        &updatedPerson.Name, 
+        &updatedPerson.Age,
+        &updatedPerson.Address,
+        &updatedPerson.Work,
+    )
+    
+    if err != nil {
+        return model.Person{}, err
+    }
 
-	return updatePerson, nil
+    return updatedPerson, nil
 }
 
-func (r *Repository) DeleteRecordPerson(personID int) error {
+func (r *PersonsPostgres) DeleteRecordPerson(personID int) error {
 
 	queryDeletePerson := `delete from person where personid = $1`
-	_, err := r.db.Exec(queryDeleteAccessHomeID, personID)
+	_, err := r.db.Exec(queryDeletePerson, personID)
 
 	return err
 }

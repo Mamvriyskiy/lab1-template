@@ -3,33 +3,32 @@ package services
 import (
 	"github.com/Mamvriyskiy/lab1-template/person/model"
 	"github.com/Mamvriyskiy/lab1-template/person/repository"
-	"github.com/golang/mock/mockgen/model"
 )
 
 type PersonsService struct {
-	repo repository.Repository
+	repo repository.RepoPersons
 }
 
-func NewPersonsService(repo repository.Repository) *PersonsService {
+func NewPersonsService(repo repository.RepoPersons) *PersonsService {
 	return &PersonsService{repo: repo}
 }
 
-func (s *Services) GetInfoPerson() (model.Person, error) {
-	return s.repo.GetInfoPerson()
+func (s *PersonsService) GetInfoPerson(personID int) (model.Person, error) {
+	return s.GetInfoPerson(personID)
 }
 
-func (s *Services) GetInfoPersons() ([]model.Person, error) {
-	return s.repo.GetInfoPersons(), nil
+func (s *PersonsService) GetInfoPersons() ([]model.Person, error) {
+	return s.GetInfoPersons()
 }
 
-func (s *Services) CreateNewRecordPerson() (model.Person, error) {
-	return s.repo.CreateNewRecordPerson(), nil
+func (s *PersonsService) CreateNewRecordPerson(person model.Person) (model.Person, error) {
+	return s.CreateNewRecordPerson(person)
 }
 
-func (s *Services) UpdateRecordPerson() (model.Person, error) {
-	return s.repo.UpdateRecordPerson(), nil
+func (s *PersonsService) UpdateRecordPerson(person model.Person) (model.Person, error) {
+	return s.UpdateRecordPerson(person)
 }
 
-func (s *Services) DeleteRecordPerson() error {
-	return s.repo.DeleteRecordPerson(), nil
+func (s *PersonsService) DeleteRecordPerson(personID int) error {
+	return s.DeleteRecordPerson(personID)
 }

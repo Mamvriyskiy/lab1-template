@@ -3,8 +3,9 @@ package repository
 import (
 	"fmt"
 
-	"github.com/Mamvriyskiy/database_course/main/logger"
+	logger "github.com/Mamvriyskiy/lab1-template/person/logger"
 	"github.com/jmoiron/sqlx"
+	"go.uber.org/zap"
 
 	// Импорт драйвера PostgreSQL для его регистрации.
 	_ "github.com/lib/pq"
@@ -24,12 +25,12 @@ func NewPostgresDB(cfg *Config) (*sqlx.DB, error) {
 		"host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
 		cfg.Host, cfg.Port, cfg.Username, cfg.DBName, cfg.Password, cfg.SSLMode))
 	if err != nil {
-		logger.Fatal("Error connect DB:", err)
+		logger.Fatal("Error connect DB:", zap.Error(err))
 		return nil, err
 	}
 	err = db.Ping()
 	if err != nil {
-		logger.Fatal("Error connect DB:", err)
+		logger.Fatal("Error connect DB:", zap.Error(err))
 		return nil, err
 	}
 
