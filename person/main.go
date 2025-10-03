@@ -44,7 +44,7 @@ func main() {
 	})
 
 	if err != nil {
-		// logger.Log("Error", "initCongig", "Error config DB:", err, "")
+		logger.Fatal("Error connect db:", zap.Error(err))
 		return
 	}
 
@@ -53,8 +53,8 @@ func main() {
 	handlers := handler.NewHandler(services)
 
 	srv := new(server.Server)
-	if err := srv.Run("8000", handlers.InitRouters()); err != nil {
-		// logger.Log("Error", "Run", "Error occurred while running http server:", err, "")
+	if err := srv.Run("8080", handlers.InitRouters()); err != nil {
+		logger.Fatal("Error occurred while running http server:", zap.Error(err))
 		return
 	}
 }
