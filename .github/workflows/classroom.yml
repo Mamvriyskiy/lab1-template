@@ -15,10 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Build Docker image
+      - name: Build Docker image and run unit Tests
         run: docker build -t myapp:latest .
-      - name: Run Unit Tests
-        run: docker run --rm myapp:latest go test ./...
 
   deploy:
     name: Deploy to Render
