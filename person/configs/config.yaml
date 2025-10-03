@@ -1,6 +1,6 @@
 db: 
-  username: "postgres"
-  host: "localhost"
+  username: "mypostgres"
+  host: "dpg-d3g3kdu3jp1c73flehqg-a"
   port: "5432"
-  dbname: "postgres"
-  sslmode: "disable"
+  dbname: "mypostgres_3lod"
+  sslmode: "require"
