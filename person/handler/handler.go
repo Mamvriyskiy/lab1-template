@@ -16,7 +16,7 @@ func NewHandler(services *services.Services) *Handler {
 func (h *Handler) InitRouters() *gin.Engine {
 	router := gin.New()
 
-	persons := router.Group("persons")
+	persons := router.Group("api/v1/persons")
 
 	// Инофрмация о человека
 	persons.GET("/:personId", h.GetInfoPerson)
