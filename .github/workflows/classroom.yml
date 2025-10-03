@@ -7,42 +7,36 @@ on:
   pull_request:
     branches:
       - master
-  workflow_dispatch:   # позволяет запускать workflow вручную
+  workflow_dispatch:   # чтобы можно было запускать вручную
 
 jobs:
   build:
-    name: Build & Test
+    name: Build & Unit Tests
     runs-on: ubuntu-latest
-    outputs:
-      image_tag: myapp:latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
       - name: Build Docker image
         run: docker build -t myapp:latest .
-
       - name: Run Unit Tests
-        run: |
-          docker run --rm myapp:latest go test ./...
-
-      - name: Run API Tests
-        uses: matt-ball/newman-action@master
-        with:
-          collection: postman/[inst] Lab1.postman_collection.json
-          environment: postman/[inst][render] Lab1.postman_environment.json
-          delayRequest: 100
-          reporters: '[ "cli" ]'
+        run: docker run --rm myapp:latest go test ./...
 
   deploy:
     name: Deploy to Render
     runs-on: ubuntu-latest
-    needs: build   # будет запускаться только после успешного build job
-    if: ${{ github.event_name == 'workflow_dispatch' }}  # можно запускать вручную
+    needs: build  # будет запускаться только после успешного build
     steps:
       - name: Trigger Render deploy
         run: |
           curl -X POST "https://api.render.com/v1/services/${{ secrets.SERVICE_ID }}/deploys" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json"
+
+  integration_tests:
+    name: Run API Tests
+    uses: matt-ball/newman-action@master
+    needs: deploy
+    with:
+      collection: postman/[inst] Lab1.postman_collection.json
+      environment: postman/[inst][render] Lab1.postman_environment.json
+      delayRequest: 100
+      reporters: '[ "cli" ]'
