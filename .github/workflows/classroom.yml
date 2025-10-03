@@ -18,14 +18,8 @@ jobs:
           fetch-depth: 0
 
       # Сборка Docker-образа
-      - name: Build Docker image
-        run: |
-          docker build -t myapp:latest .
-
-      # Прогон Unit-тестов
-      - name: Run Unit Tests
-        run: |
-          docker run --rm myapp:latest go test ./...
+      - name: Build Docker image (with tests)
+        run: docker build -t myapp:latest .
 
       # Триггер деплоя в Render (Render билдит Dockerfile из GitHub)
       - name: Trigger Render deploy

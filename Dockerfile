@@ -1,14 +1,11 @@
 FROM golang:1.24-alpine AS builder
-
 WORKDIR /app
-
 RUN apk add --no-cache git
-
 COPY person/go.mod person/go.sum ./
-
 RUN go mod download
-
 COPY person/. .
+
+RUN go test ./...
 
 RUN go build -o app .
 
