@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/joho/godotenv"
+	// "github.com/joho/godotenv"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 
