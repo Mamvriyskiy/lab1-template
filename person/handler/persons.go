@@ -1,110 +1,103 @@
 package handler
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
-	"github.com/gin-gonic/gin"
+
+	logger "github.com/Mamvriyskiy/lab1-template/person/logger"
 	"github.com/Mamvriyskiy/lab1-template/person/model"
-	// logger "github.com/Mamvriyskiy/lab1-template/person/logger"
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
-func getPersonID(c *gin.Context) (int, error) {
+func GetPersonID(c *gin.Context) (int, error) {
 	id, ok := c.Get("personId")
 	if !ok {
-		//TODO: создать ошибку
-		return 0, nil
+		return 0, errors.New("ключ personId отсутствует в контексте запроса")
 	}
 
 	personID, ok := id.(int)
 	if !ok {
-		//TODO: создать ошибку
-		return 0, nil
+		return 0, errors.New("значение ключа personId имеет некорректный тип, ожидался int")
 	}
 
 	return personID, nil
 }
 
 func (h *Handler) GetInfoPerson(c *gin.Context) {
-	personID, err := getPersonID(c)
+	personID, err := GetPersonID(c)
 	if err != nil {
-		//TODO: logger, просмотреть код ошибки
-		// logger.Log("Warning", "Get", "userID is not a string", nil, "userID")
+		logger.Error("", zap.Error(err))
 		return
 	}
 
 	person, err := h.services.GetInfoPerson(personID)
 	if err != nil {
-		//TODO: logger, просмотреть код ошибки
-
+		logger.Error("", zap.Error(err))
 		return
 	}
 
-
 	c.JSON(http.StatusOK, person)
-
-	return
 }
 
 func (s *Handler) GetInfoPersons(c *gin.Context) {
 	persons, err := s.services.GetInfoPersons()
 	if err != nil {
-		//TODO: logger, просмотреть код ошибки
+		logger.Error("", zap.Error(err))
 		return
 	}
 
 	c.JSON(http.StatusOK, persons)
-
-	return
 }
 
 func (s *Handler) CreateNewRecordPerson(c *gin.Context) {
 	var newPerson model.Person
 	if err := c.BindJSON(&newPerson); err != nil {
-		//TODO: logger, просмотреть код ошибки
+		logger.Error("не удалось распарсить тело запроса в структуру Person",
+        	zap.Error(err),
+    	)
 		return
 	}
 
 	createPerson, err := s.services.CreateNewRecordPerson(newPerson)
 	if err != nil {
-		//TODO: logger, просмотреть код ошибки
+		logger.Error("", zap.Error(err))
 		return
 	}
 
-	c.JSON(http.StatusOK, createPerson)
-
-	return
+	c.Header("Location", fmt.Sprintf("/api/v1/persons/%d", createPerson.PersonID))
+	c.Status(http.StatusCreated)
 }
 
 func (s *Handler) UpdateRecordPerson(c *gin.Context) {
 	var person model.Person
 	if err := c.BindJSON(&person); err != nil {
-		//TODO: logger, просмотреть код ошибки
+		logger.Error("не удалось распарсить тело запроса в структуру Person",
+        	zap.Error(err),
+    	)
 		return
 	}
 
 	updatePerson, err := s.services.UpdateRecordPerson(person)
 	if err != nil {
-		//TODO: logger, просмотреть код ошибки
+		logger.Error("", zap.Error(err))
 		return
 	}
 
 	c.JSON(http.StatusOK, updatePerson)
-
-	return 
 }
 
 func (s *Handler) DeleteRecordPerson(c *gin.Context) {
-	personID, err := getPersonID(c)
+	personID, err := GetPersonID(c)
 	if err != nil {
-		//TODO: logger, просмотреть код ошибки
-		// logger.Log("Warning", "Get", "userID is not a string", nil, "userID")
+		logger.Error("", zap.Error(err))
 		return
 	}
 
 	err = s.services.DeleteRecordPerson(personID)
 	if err != nil {
-		//TODO: logger, просмотреть код ошибки
+		logger.Error("", zap.Error(err))
 		return
 	}
-
-	return 
 }

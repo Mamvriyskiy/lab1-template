@@ -15,8 +15,8 @@ func NewPersonsPostgres(db *sqlx.DB) *PersonsPostgres {
 
 func (r *PersonsPostgres) GetInfoPerson(persinID int) (model.Person, error) {
 	var person model.Person
-	queryGetPersons := `select * from person where id = $1`
-	err := r.db.Select(&person, queryGetPersons, persinID)
+	queryGetPersons := `select * from person where personid = $1`
+	err := r.db.Get(&person, queryGetPersons, persinID)
 	if err != nil {
 		return model.Person{}, err
 	}
@@ -38,8 +38,7 @@ func (r *PersonsPostgres) GetInfoPersons() ([]model.Person, error) {
 func (r *PersonsPostgres) CreateNewRecordPerson(person model.Person) (model.Person, error) {
 	var newPerson model.Person
 	queryCreatePerson := `insert into person (Name, Age, Address, Work) values($1, $2, $3, $4) returning *`
-	row := r.db.QueryRow(queryCreatePerson, person.Name, person.Age, person.Address, person.Work)
-	err := row.Scan(&newPerson)
+	err := r.db.Get(&newPerson, queryCreatePerson, person.Name, person.Age, person.Address, person.Work)
 	if err != nil {
 		return model.Person{}, err
 	}
@@ -51,8 +50,8 @@ func (r *PersonsPostgres) UpdateRecordPerson(person model.Person) (model.Person,
 	queryUpdatePerson := `
         UPDATE person 
         SET name = $1, age = $2, address = $3, work = $4 
-        WHERE id = $5
-        RETURNING id, name, age, address, work`
+        WHERE personid = $5
+        RETURNING personid, name, age, address, work`
     
     var updatedPerson model.Person
     err := r.db.QueryRow(
