@@ -28,11 +28,11 @@ func main() {
 
 	logger.Info("Файл конфигурации успешно прочитан")
 
-	if err := godotenv.Load(); err != nil {
-		logger.Fatal("Error load env file:", zap.Error(err))
-		return
-	}
-	logger.Info("Load env")
+	// if err := godotenv.Load(); err != nil {
+	// 	logger.Fatal("Error load env file:", zap.Error(err))
+	// 	return
+	// }
+	// logger.Info("Load env")
 
 	db, err := repo.NewPostgresDB(&repo.Config{
 		Host:     viper.GetString("db.host"),
