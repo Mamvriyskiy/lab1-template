@@ -18,11 +18,9 @@ func GetPersonID(c *gin.Context) (int, error) {
         return 0, errors.New("personId отсутствует в параметрах пути")
     }
     
-    logger.Info("Получен personId из параметров пути", zap.String("personId", personId))
-    
     id, err := strconv.Atoi(personId)
     if err != nil {
-        return 0, errors.New("personId должен быть числом")
+        return 0, errors.New("значение ключа personId имеет некорректный тип, ожидался int")
     }
     
     return id, nil
@@ -92,7 +90,7 @@ func (s *Handler) UpdateRecordPerson(c *gin.Context) {
 	}
 
 	person.PersonID = personID
-	
+
 	updatePerson, err := s.services.UpdateRecordPerson(person)
 	if err != nil {
 		logger.Error("", zap.Error(err))

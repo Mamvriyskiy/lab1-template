@@ -10,15 +10,18 @@ import (
 func TestGetPersonID_NotFound(t *testing.T) {
 	c := &gin.Context{}
 
+	c.Params = gin.Params{}
+
 	id, err := GetPersonID(c)
 
 	assert.Equal(t, 0, id)
-	assert.EqualError(t, err, "ключ personId отсутствует в контексте запроса")
+	assert.EqualError(t, err, "personId отсутствует в параметрах пути")
 }
 
 func TestGetPersonID_WrongType(t *testing.T) {
 	c := &gin.Context{}
-	c.Set("personId", "not-an-int")
+
+	c.Params = gin.Params{gin.Param{Key: "personId", Value: "not-an-int"}}
 
 	id, err := GetPersonID(c)
 
@@ -28,7 +31,8 @@ func TestGetPersonID_WrongType(t *testing.T) {
 
 func TestGetPersonID_Success(t *testing.T) {
 	c := &gin.Context{}
-	c.Set("personId", 42)
+	
+	c.Params = gin.Params{gin.Param{Key: "personId", Value: "42"}}
 
 	id, err := GetPersonID(c)
 
