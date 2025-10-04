@@ -41,6 +41,7 @@ func (h *Handler) GetInfoPerson(c *gin.Context) {
 		return
 	}
 
+	logger.Info("Get person", zap.Any("person", person))
 	c.JSON(http.StatusOK, person)
 }
 
@@ -51,6 +52,7 @@ func (s *Handler) GetInfoPersons(c *gin.Context) {
 		return
 	}
 
+	logger.Info("Get persons", zap.Any("persons", persons))
 	c.JSON(http.StatusOK, persons)
 }
 
@@ -70,6 +72,7 @@ func (s *Handler) CreateNewRecordPerson(c *gin.Context) {
 		return
 	}
 
+	logger.Info("Create person", zap.Any("person", createPerson))
 	c.Header("Location", fmt.Sprintf("/api/v1/persons/%d", createPerson.PersonID))
 	c.JSON(http.StatusCreated, createPerson)
 }
@@ -99,6 +102,7 @@ func (s *Handler) UpdateRecordPerson(c *gin.Context) {
 		return
 	}
 
+	logger.Info("Update person", zap.Any("person", updatePerson))
 	c.JSON(http.StatusOK, updatePerson)
 }
 
@@ -116,5 +120,6 @@ func (s *Handler) DeleteRecordPerson(c *gin.Context) {
 		return
 	}
 
+	logger.Info("Delete person", zap.Any("person", personID))
 	c.Status(http.StatusNoContent)
 }
