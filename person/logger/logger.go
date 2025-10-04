@@ -1,22 +1,43 @@
-package Logger
+package logger
 
 import (
-	"log"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 var Logger *zap.Logger
 
-func init() {
-	var err error
-	Logger, err = zap.NewProduction()
-	if err != nil {
-		log.Fatal("Ошибка инициализации логгера: ", err)
+func InitLogger(development bool) error {
+	var config zap.Config
+	
+	if development {
+		// Красивый вывод для разработки
+		config = zap.NewDevelopmentConfig()
+		config.EncoderConfig.TimeKey = "time"
+		config.EncoderConfig.LevelKey = "level"
+		config.EncoderConfig.NameKey = "logger"
+		config.EncoderConfig.CallerKey = "caller"
+		config.EncoderConfig.MessageKey = "msg"
+		config.EncoderConfig.StacktraceKey = "stacktrace"
+		config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+		config.EncoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
+	} else {
+		// Структурированный вывод для продакшена
+		config = zap.NewProductionConfig()
+		config.EncoderConfig.TimeKey = "time"
+		config.EncoderConfig.LevelKey = "level"
+		config.EncoderConfig.MessageKey = "msg"
+		config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	}
-}
-
-func Sync() {
-	Logger.Sync()
+	
+	var err error
+	Logger, err = config.Build()
+	if err != nil {
+		return err
+	}
+	
+	return nil
 }
 
 func Fatal(msg string, args ...zap.Field) {

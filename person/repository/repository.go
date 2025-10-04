@@ -10,6 +10,7 @@ type RepoPersons interface {
 	GetInfoPersons() ([]model.Person, error)
 	CreateNewRecordPerson(person model.Person) (model.Person, error)
 	UpdateRecordPerson(person model.Person) (model.Person, error)
+	DeleteRecordPerson(personID int) error
 }
 
 type Repository struct {

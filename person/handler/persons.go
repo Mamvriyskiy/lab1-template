@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	logger "github.com/Mamvriyskiy/lab1-template/person/logger"
 	"github.com/Mamvriyskiy/lab1-template/person/model"
@@ -12,23 +13,26 @@ import (
 )
 
 func GetPersonID(c *gin.Context) (int, error) {
-	id, ok := c.Get("personId")
-	if !ok {
-		return 0, errors.New("ключ personId отсутствует в контексте запроса")
-	}
-
-	personID, ok := id.(int)
-	if !ok {
-		return 0, errors.New("значение ключа personId имеет некорректный тип, ожидался int")
-	}
-
-	return personID, nil
+	personId := c.Param("personId")
+    if personId == "" {
+        return 0, errors.New("personId отсутствует в параметрах пути")
+    }
+    
+    logger.Info("Получен personId из параметров пути", zap.String("personId", personId))
+    
+    id, err := strconv.Atoi(personId)
+    if err != nil {
+        return 0, errors.New("personId должен быть числом")
+    }
+    
+    return id, nil
 }
 
 func (h *Handler) GetInfoPerson(c *gin.Context) {
 	personID, err := GetPersonID(c)
 	if err != nil {
 		logger.Error("", zap.Error(err))
+		c.Status(http.StatusBadRequest)
 		return
 	}
 
@@ -45,6 +49,7 @@ func (s *Handler) GetInfoPersons(c *gin.Context) {
 	persons, err := s.services.GetInfoPersons()
 	if err != nil {
 		logger.Error("", zap.Error(err))
+		c.Status(http.StatusNotFound)
 		return
 	}
 
@@ -71,6 +76,13 @@ func (s *Handler) CreateNewRecordPerson(c *gin.Context) {
 }
 
 func (s *Handler) UpdateRecordPerson(c *gin.Context) {
+	personID, err := GetPersonID(c)
+	if err != nil {
+		logger.Error("", zap.Error(err))
+		c.Status(http.StatusBadRequest)
+		return
+	}
+
 	var person model.Person
 	if err := c.BindJSON(&person); err != nil {
 		logger.Error("не удалось распарсить тело запроса в структуру Person",
@@ -79,6 +91,8 @@ func (s *Handler) UpdateRecordPerson(c *gin.Context) {
 		return
 	}
 
+	person.PersonID = personID
+	
 	updatePerson, err := s.services.UpdateRecordPerson(person)
 	if err != nil {
 		logger.Error("", zap.Error(err))
@@ -92,6 +106,7 @@ func (s *Handler) DeleteRecordPerson(c *gin.Context) {
 	personID, err := GetPersonID(c)
 	if err != nil {
 		logger.Error("", zap.Error(err))
+		c.Status(http.StatusBadRequest)
 		return
 	}
 

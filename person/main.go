@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	// "github.com/joho/godotenv"
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 
@@ -21,6 +21,13 @@ func initConfig() error {
 }
 
 func main() {
+	if err := logger.InitLogger(true); err != nil {
+		panic("Не удалось инициализировать логгер: " + err.Error())
+	}
+	defer logger.Logger.Sync()
+
+	logger.Info("Инициализация приложения...")
+
 	if err := initConfig(); err != nil {
 		logger.Fatal("Ошибка чтения файла конфигурации: ", zap.Error(err))
 		return
@@ -28,11 +35,11 @@ func main() {
 
 	logger.Info("Файл конфигурации успешно прочитан")
 
-	// if err := godotenv.Load(); err != nil {
-	// 	logger.Fatal("Error load env file:", zap.Error(err))
-	// 	return
-	// }
-	// logger.Info("Load env")
+	if err := godotenv.Load(); err != nil {
+		logger.Fatal("Error load env file:", zap.Error(err))
+		return
+	}
+	logger.Info("Load env")
 
 	db, err := repo.NewPostgresDB(&repo.Config{
 		Host:     viper.GetString("db.host"),

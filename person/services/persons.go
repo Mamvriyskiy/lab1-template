@@ -14,21 +14,21 @@ func NewPersonsService(repo repository.RepoPersons) *PersonsService {
 }
 
 func (s *PersonsService) GetInfoPerson(personID int) (model.Person, error) {
-	return s.GetInfoPerson(personID)
+	return s.repo.GetInfoPerson(personID)
 }
 
 func (s *PersonsService) GetInfoPersons() ([]model.Person, error) {
-	return s.GetInfoPersons()
+	return s.repo.GetInfoPersons()
 }
 
 func (s *PersonsService) CreateNewRecordPerson(person model.Person) (model.Person, error) {
-	return s.CreateNewRecordPerson(person)
+	return s.repo.CreateNewRecordPerson(person)
 }
 
 func (s *PersonsService) UpdateRecordPerson(person model.Person) (model.Person, error) {
-	return s.UpdateRecordPerson(person)
+	return s.repo.UpdateRecordPerson(person)
 }
 
 func (s *PersonsService) DeleteRecordPerson(personID int) error {
-	return s.DeleteRecordPerson(personID)
+	return s.repo.DeleteRecordPerson(personID)
 }
