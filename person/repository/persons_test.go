@@ -119,10 +119,15 @@ func TestUpdateRecordPerson_Success(t *testing.T) {
 	person := model.Person{PersonID: 1, Name: "Bob", Age: 29, Address: "Chicago", Work: "Chef"}
 
 	mock.ExpectQuery(regexp.QuoteMeta(`
-        UPDATE person 
-        SET name = $1, age = $2, address = $3, work = $4 
-        WHERE personid = $5
-        RETURNING personid, name, age, address, work`)).
+        UPDATE person
+			SET 
+				name    = COALESCE($1, name),
+				age     = COALESCE($2, age),
+				address = COALESCE($3, address),
+				work    = COALESCE($4, work)
+			WHERE personid = $5
+			RETURNING personid, name, age, address, work;
+		`)).
 		WithArgs(person.Name, person.Age, person.Address, person.Work, person.PersonID).
 		WillReturnRows(sqlmock.NewRows([]string{"personid", "name", "age", "address", "work"}).
 			AddRow(1, "Bob", 29, "Chicago", "Chef"))
