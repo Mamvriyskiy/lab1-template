@@ -36,6 +36,7 @@ func (h *Handler) GetInfoPerson(c *gin.Context) {
 
 	person, err := h.services.GetInfoPerson(personID)
 	if err != nil {
+		c.Status(http.StatusNotFound)
 		logger.Error("", zap.Error(err))
 		return
 	}
@@ -46,8 +47,7 @@ func (h *Handler) GetInfoPerson(c *gin.Context) {
 func (s *Handler) GetInfoPersons(c *gin.Context) {
 	persons, err := s.services.GetInfoPersons()
 	if err != nil {
-		logger.Error("", zap.Error(err))
-		c.Status(http.StatusNotFound)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
