@@ -119,12 +119,12 @@ func TestUpdateRecordPerson_Success(t *testing.T) {
 	person := model.Person{PersonID: 1, Name: "Bob", Age: 29, Address: "Chicago", Work: "Chef"}
 
 	mock.ExpectQuery(regexp.QuoteMeta(`
-        UPDATE person
+			UPDATE person
 			SET 
-				name    = COALESCE($1, name),
-				age     = COALESCE($2, age),
-				address = COALESCE($3, address),
-				work    = COALESCE($4, work)
+				name    = COALESCE(NULLIF($1, ''), name),
+				age     = COALESCE(NULLIF($2, 0), age),
+				address = COALESCE(NULLIF($3, ''), address),
+				work    = COALESCE(NULLIF($4, ''), work)
 			WHERE personid = $5
 			RETURNING personid, name, age, address, work;
 		`)).
