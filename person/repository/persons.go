@@ -48,10 +48,15 @@ func (r *PersonsPostgres) CreateNewRecordPerson(person model.Person) (model.Pers
 
 func (r *PersonsPostgres) UpdateRecordPerson(person model.Person) (model.Person, error) {
 	queryUpdatePerson := `
-        UPDATE person 
-        SET name = $1, age = $2, address = $3, work = $4 
-        WHERE personid = $5
-        RETURNING personid, name, age, address, work`
+        UPDATE person
+			SET 
+				name    = COALESCE($1, name),
+				age     = COALESCE($2, age),
+				address = COALESCE($3, address),
+				work    = COALESCE($4, work)
+			WHERE personid = $5
+			RETURNING personid, name, age, address, work;
+		`
     
     var updatedPerson model.Person
 	err := r.db.Get(
@@ -66,7 +71,7 @@ func (r *PersonsPostgres) UpdateRecordPerson(person model.Person) (model.Person,
 	if err != nil {
 		return model.Person{}, err
 	}
-	
+
     return updatedPerson, nil
 }
 
