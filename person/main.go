@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	// "github.com/joho/godotenv"
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 
@@ -35,10 +35,10 @@ func main() {
 
 	logger.Info("Файл конфигурации успешно прочитан")
 
-	// if err := godotenv.Load(); err != nil {
-	// 	logger.Fatal("Error load env file:", zap.Error(err))
-	// 	return
-	// }
+	if err := godotenv.Load(); err != nil {
+		logger.Fatal("Error load env file:", zap.Error(err))
+		return
+	}
 	logger.Info("Load env")
 
 	db, err := repo.NewPostgresDB(&repo.Config{

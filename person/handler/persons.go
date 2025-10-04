@@ -70,7 +70,7 @@ func (s *Handler) CreateNewRecordPerson(c *gin.Context) {
 	}
 
 	c.Header("Location", fmt.Sprintf("/api/v1/persons/%d", createPerson.PersonID))
-	c.Status(http.StatusCreated)
+	c.JSON(http.StatusCreated, createPerson)
 }
 
 func (s *Handler) UpdateRecordPerson(c *gin.Context) {
