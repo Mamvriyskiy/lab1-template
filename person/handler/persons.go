@@ -60,7 +60,7 @@ func (s *Handler) CreateNewRecordPerson(c *gin.Context) {
 		logger.Error("не удалось распарсить тело запроса в структуру Person",
         	zap.Error(err),
     	)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()}))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
