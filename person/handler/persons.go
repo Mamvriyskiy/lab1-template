@@ -113,4 +113,6 @@ func (s *Handler) DeleteRecordPerson(c *gin.Context) {
 		logger.Error("", zap.Error(err))
 		return
 	}
+
+	c.Status(http.StatusNoContent)
 }
