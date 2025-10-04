@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/Mamvriyskiy/lab1-template/person/model"
 )
