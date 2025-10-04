@@ -29,7 +29,7 @@ func (r *PersonsPostgres) GetInfoPersons() ([]model.Person, error) {
 	queryGetPersons := `select * from person`
 	err := r.db.Select(&persons, queryGetPersons)
 	if err != nil {
-		return nil, err
+		return []model.Person{}, err
 	}
 
 	return persons, nil
@@ -54,25 +54,19 @@ func (r *PersonsPostgres) UpdateRecordPerson(person model.Person) (model.Person,
         RETURNING personid, name, age, address, work`
     
     var updatedPerson model.Person
-    err := r.db.QueryRow(
-        queryUpdatePerson, 
-        person.Name, 
-        person.Age, 
-        person.Address, 
-        person.Work, 
-        person.PersonID,
-    ).Scan(
-        &updatedPerson.PersonID,
-        &updatedPerson.Name, 
-        &updatedPerson.Age,
-        &updatedPerson.Address,
-        &updatedPerson.Work,
-    )
-    
-    if err != nil {
-        return model.Person{}, err
-    }
-
+	err := r.db.Get(
+		&updatedPerson,
+		queryUpdatePerson,
+		person.Name,
+		person.Age,
+		person.Address,
+		person.Work,
+		person.PersonID,
+	)
+	if err != nil {
+		return model.Person{}, err
+	}
+	
     return updatedPerson, nil
 }
 
